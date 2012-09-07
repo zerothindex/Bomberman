@@ -1,5 +1,6 @@
 package teamname.bomberman;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -29,13 +30,24 @@ public class GamePainter extends JComponent {
 			for (int c = 0; c < tiles[0].length; c++) {
 				graphics.drawImage(ImageCache.get(tiles[r][c].getClass()),
 						c*World.GRID_WIDTH, r*World.GRID_WIDTH, null);
+				//graphics.drawString("("+r+","+c+")", c*World.GRID_WIDTH+20, r*World.GRID_WIDTH+40);
 			}
 		}
 		// Draw players.
 		Player[] players = game.getWorld().getPlayers();
 		for (int i = 0; i < players.length; i++) {
-
+			graphics.drawImage(ImageCache.get(players[i].getClass()),
+					players[i].getX() - World.GRID_WIDTH/2,
+					players[i].getY() - World.GRID_WIDTH/2, null);
 		}
+
+		// Useful info.
+		Player p1 = game.getWorld().getPlayers()[0];
+		graphics.setColor(Color.WHITE);
+		graphics.drawString("fps:  "+game.getFps(), 20, 20);
+		graphics.drawString("p1:   "+p1.getX() + ", " + p1.getY(), 20, 40);
+		graphics.drawString("grid: "+game.getWorld().getGrid(p1.getY())+", "
+				+ game.getWorld().getGrid(p1.getX()), 20, 60);
 
 		graphics.finalize();
 	}
