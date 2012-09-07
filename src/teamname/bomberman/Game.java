@@ -8,13 +8,15 @@ import teamname.bomberman.entity.Player;
  */
 public class Game extends Thread {
 
-	private final long SLEEP_TIME = 50;
+	private final long SLEEP_TIME = 30;
 
 	private boolean gameRunning;
 
 	private final World world;
 
 	private GamePainter painter;
+
+	private int measuredFps;
 
 	public Game(int worldWidth, int worldHeight, Player[] players) {
 		world = new World(worldWidth, worldHeight, players);
@@ -37,15 +39,17 @@ public class Game extends Thread {
 	 */
 	@Override
 	public void run() {
+		long start;
 		while (gameRunning) {
+			start = System.currentTimeMillis();
 			update();
 			render();
-
 			try {
 				Thread.sleep(SLEEP_TIME);
 			} catch (InterruptedException exception) {
 				exception.printStackTrace();
 			}
+			measuredFps = (int) (1000/(System.currentTimeMillis() - start));
 		}
 	}
 
@@ -53,7 +57,15 @@ public class Game extends Thread {
 	 * Take input and update the game state.
 	 */
 	private void update() {
-
+		if (PlayerController.isNorthPressed()) {
+			world.move(world.getPlayers()[0], World.Direction.NORTH);
+		} else if (PlayerController.isSouthPressed()) {
+			world.move(world.getPlayers()[0], World.Direction.SOUTH);
+		} else if (PlayerController.isEastPressed()) {
+			world.move(world.getPlayers()[0], World.Direction.EAST);
+		} else if (PlayerController.isWestPressed()) {
+			world.move(world.getPlayers()[0], World.Direction.WEST);
+		}
 	}
 
 	/**
@@ -65,5 +77,9 @@ public class Game extends Thread {
 
 	public World getWorld() {
 		return world;
+	}
+
+	public int getFps() {
+		return measuredFps;
 	}
 }
