@@ -2,7 +2,6 @@ package teamname.bomberman;
 
 import javax.swing.JFrame;
 
-import teamname.bomberman.entity.Player;
 
 /**
  * Launches the UI and starts game logic.

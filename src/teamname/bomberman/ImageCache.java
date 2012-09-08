@@ -5,26 +5,27 @@ import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.Map;
 
-import teamname.bomberman.entity.Player;
-import teamname.bomberman.tile.Ground;
-import teamname.bomberman.tile.Rock;
-import teamname.bomberman.tile.Wall;
-
 public class ImageCache {
 
-	private static Map<Class<?>, Image> imageMap;
+	private static Map<String, Image> imageMap;
 
 	public static void loadImages() {
-		imageMap = new HashMap<Class<?>, Image>();
+		imageMap = new HashMap<String, Image>();
 
-		imageMap.put(Ground.class, Toolkit.getDefaultToolkit().getImage("assets/ground.png"));
-		imageMap.put(Rock.class, Toolkit.getDefaultToolkit().getImage("assets/rock.png"));
-		imageMap.put(Wall.class, Toolkit.getDefaultToolkit().getImage("assets/wall.png"));
-		imageMap.put(Player.class, Toolkit.getDefaultToolkit().getImage("assets/player.png"));
+		imageMap.put(Tile.GROUND.toString(), Toolkit.getDefaultToolkit().getImage("assets/ground.png"));
+		imageMap.put(Tile.ROCK.toString(), Toolkit.getDefaultToolkit().getImage("assets/rock.png"));
+		imageMap.put(Tile.WALL.toString(), Toolkit.getDefaultToolkit().getImage("assets/wall.png"));
+		imageMap.put(Tile.BOMB.toString(), Toolkit.getDefaultToolkit().getImage("assets/bomb.png"));
+		imageMap.put("explosion", Toolkit.getDefaultToolkit().getImage("assets/explosion.png"));
+		imageMap.put("player", Toolkit.getDefaultToolkit().getImage("assets/player.png"));
 	}
 
-	public static Image get(Class<?> clazz) {
-		return imageMap.get(clazz);
+	public static Image get(String key) {
+		return imageMap.get(key);
+	}
+
+	public static Image get(Tile type) {
+		return get(type.toString());
 	}
 
 }

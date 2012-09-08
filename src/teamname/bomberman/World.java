@@ -1,11 +1,9 @@
 package teamname.bomberman;
 
-import teamname.bomberman.entity.Entity;
-import teamname.bomberman.entity.Player;
-import teamname.bomberman.tile.Ground;
-import teamname.bomberman.tile.Rock;
-import teamname.bomberman.tile.Tile;
-import teamname.bomberman.tile.Wall;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class World {
 
@@ -18,17 +16,23 @@ public class World {
 
 	public final static int GRID_WIDTH = 64;
 	public final static double ROCK_CHANCE = 0.2;
+	public final static long FUSE_TIME = 3000;
+	public final static long EXPLOSION_TIME = 2000;
+	public final static int EXPLOSION_RADIUS = 3;
 
 	// Tile[y][x]
 	private final Tile[][] tiles;
 	private final Player[] players;
+	private final ArrayList<Explosion> explosions;
+	private final Timer timer;
 
 	public World(int width, int height, Player[] players) {
 		this.width = width;
 		this.height = height;
 		this.players = players;
 		tiles = new Tile[height][width];
-
+		explosions = new ArrayList<Explosion>();
+		timer = new Timer();
 		initWorld();
 	}
 
@@ -38,16 +42,16 @@ public class World {
 			for (int c = 0; c < width; c++) {
 				if (r == 0 || c == 0 || r == height-1 || c == width-1) {
 					// Create border walls.
-					tiles[r][c] = new Wall(r, c);
+					tiles[r][c] = Tile.WALL;
 				} else if (r % 2 == 0 && c % 2 == 0) {
 					// Create grid walls.
-					tiles[r][c] = new Wall(r, c);
+					tiles[r][c] = Tile.WALL;
 				} else if (Math.random() < ROCK_CHANCE) {
 					// Create destructable rocks.
-					tiles[r][c] = new Rock(r, c);
+					tiles[r][c] = Tile.ROCK;
 				} else {
 					// Lastly, create ground.
-					tiles[r][c] = new Ground(r, c);
+					tiles[r][c] = Tile.GROUND;
 				}
 			}
 		}
@@ -152,6 +156,30 @@ public class World {
 		return Direction.NONE;
 	}
 
+	public void dropBomb(Player player) {
+		final int r = getGrid(player.getY());
+		final int c = getGrid(player.getX());
+		tiles[r][c] = Tile.BOMB;
+		final Explosion explosion = new Explosion(this, r, c, EXPLOSION_RADIUS);
+		// Detonation timer.
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				explosions.add(explosion);
+			}
+		}, FUSE_TIME);
+		// Extinguishing timer.
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				for (int[] coord : explosion.getTiles()) {
+					tiles[coord[0]][coord[1]] = Tile.GROUND;
+				}
+				explosions.remove(explosion);
+			}
+		}, FUSE_TIME + EXPLOSION_TIME);
+	}
+
 	public int getGrid(int coord) {
 		return coord / GRID_WIDTH;
 	}
@@ -172,37 +200,47 @@ public class World {
 		return players;
 	}
 
-	public Tile getRelative(Tile source, Direction dir) {
+	public ArrayList<Explosion> getExplosions() {
+		return (ArrayList<Explosion>) explosions.clone();
+	}
+
+	public Tile getRelative(int r, int c, Direction dir) {
 		switch (dir) {
 		case NORTH:
-			if (source.getRow() == 0) return null;
-			return tiles[source.getRow()-1][source.getCol()];
+			if (r == 0) return null;
+			return tiles[r - 1][c];
 		case SOUTH:
-			if (source.getRow() == height - 1) return null;
-			return tiles[source.getRow()+1][source.getCol()];
+			if (r == height - 1) return null;
+			return tiles[r + 1][c];
 		case EAST:
-			if (source.getCol() == width - 1) return null;
-			return tiles[source.getRow()][source.getCol() + 1];
+			if (c == width - 1) return null;
+			return tiles[r][c + 1];
 		case WEST:
-			if (source.getCol() == 0) return null;
-			return tiles[source.getRow()][source.getCol() - 1];
+			if (c == 0) return null;
+			return tiles[r][c - 1];
 		}
 		return null;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 
 	/**
 	 * Centers the Entity so that it lies in the center of the tile on the X axis.
 	 */
-	private void centerX(Entity entity) {
+	private void centerX(Player entity) {
 		entity.setX(entity.getX() - getOffset(entity.getX()));
 	}
 
 	/**
 	 * Centers the Entity so that it lies in the center of the tile on the Y axis.
 	 */
-	private void centerY(Entity entity) {
+	private void centerY(Player entity) {
 		entity.setY(entity.getY() - getOffset(entity.getY()));
 	}
-
-
 }

@@ -1,6 +1,5 @@
 package teamname.bomberman;
 
-import teamname.bomberman.entity.Player;
 
 /**
  * Runs a Bomberman game.
@@ -8,7 +7,7 @@ import teamname.bomberman.entity.Player;
  */
 public class Game extends Thread {
 
-	private final long SLEEP_TIME = 30;
+	private final long SLEEP_TIME = 20;
 
 	private boolean gameRunning;
 
@@ -57,14 +56,21 @@ public class Game extends Thread {
 	 * Take input and update the game state.
 	 */
 	private void update() {
+		// If the player could move in the attempted direction, take no more move input.
+		// If the player couldn't move in one direction, check the other keys.
 		if (PlayerController.isNorthPressed()) {
-			world.move(world.getPlayers()[0], World.Direction.NORTH);
+			if (world.move(world.getPlayers()[0], World.Direction.NORTH)) return;
 		} else if (PlayerController.isSouthPressed()) {
-			world.move(world.getPlayers()[0], World.Direction.SOUTH);
-		} else if (PlayerController.isEastPressed()) {
-			world.move(world.getPlayers()[0], World.Direction.EAST);
+			if (world.move(world.getPlayers()[0], World.Direction.SOUTH)) return;
+		}
+		if (PlayerController.isEastPressed()) {
+			if (world.move(world.getPlayers()[0], World.Direction.EAST)) return;
 		} else if (PlayerController.isWestPressed()) {
-			world.move(world.getPlayers()[0], World.Direction.WEST);
+			if (world.move(world.getPlayers()[0], World.Direction.WEST)) return;
+		}
+
+		if (PlayerController.isActionPressed()) {
+			world.dropBomb(world.getPlayers()[0]);
 		}
 	}
 

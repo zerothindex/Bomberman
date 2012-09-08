@@ -5,15 +5,17 @@ import java.awt.event.KeyListener;
 
 public class PlayerController implements KeyListener {
 
-	public static final int KEY_CODE_NORTH = 38;
-	public static final int KEY_CODE_SOUTH = 40;
-	public static final int KEY_CODE_EAST = 39;
-	public static final int KEY_CODE_WEST = 37;
+	public static final int KEY_CODE_NORTH = 38; // Up arrow
+	public static final int KEY_CODE_SOUTH = 40; // Down arrow
+	public static final int KEY_CODE_EAST = 39; //Right arrow
+	public static final int KEY_CODE_WEST = 37; // Left arrow
+	public static final int KEY_CODE_ACTION = 32; // Space
 
 	private static boolean northPressed;
 	private static boolean southPressed;
 	private static boolean eastPressed;
 	private static boolean westPressed;
+	private static boolean actionPressed;
 
 	public static boolean isNorthPressed() {
 		return northPressed;
@@ -31,6 +33,10 @@ public class PlayerController implements KeyListener {
 		return westPressed;
 	}
 
+	public static boolean isActionPressed() {
+		return actionPressed;
+	}
+
 	@Override
 	public void keyPressed(KeyEvent event) {
 		switch (event.getKeyCode()) {
@@ -45,6 +51,9 @@ public class PlayerController implements KeyListener {
 			break;
 		case KEY_CODE_WEST:
 			westPressed = true;
+			break;
+		case KEY_CODE_ACTION:
+			actionPressed = true;
 			break;
 		}
 	}
@@ -63,6 +72,9 @@ public class PlayerController implements KeyListener {
 			break;
 		case KEY_CODE_WEST:
 			westPressed = false;
+			break;
+		case KEY_CODE_ACTION:
+			actionPressed = false;
 			break;
 		}
 	}
