@@ -1,4 +1,4 @@
-bomberman
+Bomberman
 =========
 
-RIT Data Communications and Networks I -- Multiplayer game project.
+Discontinued, but here for safekeeping.
