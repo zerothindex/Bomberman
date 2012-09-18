@@ -200,6 +200,7 @@ public class World {
 		return players;
 	}
 
+	@SuppressWarnings("unchecked")
 	public ArrayList<Explosion> getExplosions() {
 		return (ArrayList<Explosion>) explosions.clone();
 	}

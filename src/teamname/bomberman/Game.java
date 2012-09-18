@@ -56,6 +56,10 @@ public class Game extends Thread {
 	 * Take input and update the game state.
 	 */
 	private void update() {
+		if (PlayerController.isActionPressed()) {
+			world.dropBomb(world.getPlayers()[0]);
+		}
+
 		// If the player could move in the attempted direction, take no more move input.
 		// If the player couldn't move in one direction, check the other keys.
 		if (PlayerController.isNorthPressed()) {
@@ -67,10 +71,6 @@ public class Game extends Thread {
 			if (world.move(world.getPlayers()[0], World.Direction.EAST)) return;
 		} else if (PlayerController.isWestPressed()) {
 			if (world.move(world.getPlayers()[0], World.Direction.WEST)) return;
-		}
-
-		if (PlayerController.isActionPressed()) {
-			world.dropBomb(world.getPlayers()[0]);
 		}
 	}
 
